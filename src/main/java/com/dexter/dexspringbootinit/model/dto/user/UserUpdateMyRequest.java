@@ -1,20 +1,15 @@
-package com.dexter.dexspringbootinit.model.vo;
+package com.dexter.dexspringbootinit.model.dto.user;
+
 
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * 已登录用户视图（脱敏）
+ * 用户更新请求（个人）
  */
 @Data
-public class LoginUserVO implements Serializable {
-
-    /**
-     * 用户 id
-     */
-    private Long id;
+public class UserUpdateMyRequest implements Serializable {
 
     /**
      * 用户昵称
@@ -27,7 +22,7 @@ public class LoginUserVO implements Serializable {
     private String userAvatar;
 
     /**
-     * 用户简介
+     * 简介
      */
     private String userProfile;
 
@@ -35,16 +30,6 @@ public class LoginUserVO implements Serializable {
      * 用户角色：user/admin/ban
      */
     private String userRole;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
 
     private static final long serialVersionUID = 1L;
 }

@@ -1,13 +1,15 @@
 package com.dexter.dexspringbootinit;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DexSpringbootInitApplication {
+@MapperScan("com.dexter.dexspringbootinit.mapper")
+public class MainApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DexSpringbootInitApplication.class, args);
+        SpringApplication.run(MainApplication.class, args);
     }
 
 }
