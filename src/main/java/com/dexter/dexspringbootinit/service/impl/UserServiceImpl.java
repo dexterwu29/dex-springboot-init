@@ -5,7 +5,6 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dexter.dexspringbootinit.common.ErrorCode;
 import com.dexter.dexspringbootinit.constant.CommonConstant;
@@ -68,9 +67,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         synchronized (userAccount.intern()) {
             // 账号不能重复
-            LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(User::getUserAccount, userAccount);
-            long count = this.baseMapper.selectCount(lambdaQueryWrapper);
+            LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(User::getUserAccount, userAccount);
+            long count = this.baseMapper.selectCount(lqw);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }
@@ -108,9 +107,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 2.加密
         String encryptPassword = DigestUtil.md5Hex(SALT + userPassword);
         // 查询用户是否存在
-        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(User::getUserAccount, userAccount).eq(User::getUserPassword, encryptPassword);
-        User user = this.baseMapper.selectOne(lambdaQueryWrapper);
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getUserAccount, userAccount).eq(User::getUserPassword, encryptPassword);
+        User user = this.baseMapper.selectOne(lqw);
         // 用户不存在
         if (user == null) {
             log.info("User login failed, userAccount cannot match userPassword");
@@ -189,7 +188,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+    public LambdaQueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
@@ -201,14 +200,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         int pageSize = userQueryRequest.getPageSize();
         String sortField = userQueryRequest.getSortField();
         String sortOrder = userQueryRequest.getSortOrder();
-//        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 暂时替代一下
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(id != null, "id", id);
-        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
-        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
-        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
-        return queryWrapper;
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(id != null, User::getId, id);
+        lqw.eq(StrUtil.isNotBlank(userRole), User::getUserRole, userRole);
+        lqw.like(StrUtil.isNotBlank(userName), User::getUserName, userName);
+        lqw.like(StrUtil.isNotBlank(userProfile), User::getUserProfile, userProfile);
+        lqw.orderBy(SqlUtils.validSortField(sortField),sortOrder.equals(CommonConstant.SORT_ORDER_ASC),User::getUpdateTime);
+        return lqw;
     }
 
 

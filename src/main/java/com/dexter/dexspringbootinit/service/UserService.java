@@ -86,8 +86,5 @@ public interface UserService extends IService<User> {
      */
     List<UserVO> getUserVO(List<User> userList);
 
-//    LambdaQueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
-    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
-
-
+    LambdaQueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 }
